@@ -97,10 +97,14 @@ CLogMakerDlg::CLogMakerDlg(CWnd* pParent /*=nullptr*/)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
-	m_pThreadSend = NULL;
-	m_bSendRep = false;
-	m_nStartTime = 0;
 	m_pSpdLog = NULL;
+
+	m_pThreadSend = NULL;
+	m_pThreadSend2 = NULL;
+	m_bSendRep = false;
+
+	m_nStartTime = 0;
+
 }
 
 void CLogMakerDlg::DoDataExchange(CDataExchange* pDX)
@@ -166,23 +170,34 @@ void CLogMakerDlg::initMsgs()
 	UpdateData();
 	strDevName.Format(_T("dev-%d"), std::rand());
 
-	strMsg1.Format(_T("%s-%s"), (LPCTSTR)strDevName, _T("InfoVehicleScanPose called (from InfoVehicleScanPose)"));
-	strMsg2.Format(_T("%s-%s"), (LPCTSTR)strDevName, _T("다음 차체 촬영지점에서의 현재 로봇 포즈 1:  1447.75 -1956.92  721.496 -177.722 -30.9631  -2.1694 (from InfoVehicleScanPose)"));
-	strMsg3.Format(_T("%s-%s"), (LPCTSTR)strDevName, _T("계산된 차체 보정값: 0.839, 1.174, -1.844, -0.058, -0.103, -0.019 (from UpdateInstallPosesToRobotAsync)"));
-	strMsg4.Format(_T("%s-%s"), (LPCTSTR)strDevName, _T("장착 포즈를 로봇에 업데이트 하였습니다. (from UpdateInstallPosesToRobotAsync)"));
-	strMsg5.Format(_T("%s-%s"), (LPCTSTR)strDevName, _T("Current ROI 1 glass_edge.back(): (140.000, 2.000) (from MeasureGap)"));
-	strMsg6.Format(_T("%s-%s"), (LPCTSTR)strDevName, _T("갭 체크 용 글라스 데이터 준비 소요시간 [ms]: 17 (from MeasureGap)"));
-	strMsg7.Format(_T("%s-%s"), (LPCTSTR)strDevName, _T("ROI 1 지점 갭 체크 측정 총 소요시간 [ms]: 55 ms (from MeasureGap)"));
-	strMsg8.Format(_T("%s-%s"), (LPCTSTR)strDevName, _T("다음 글라스 촬영지점에서의 레퍼런스 로봇 포즈:  2045.08  275.316   1140.5 -178.798 -11.5987  -0.7857        0 (from InfoGlassScanPose)"));
-	strMsg9.Format(_T("%s-%s"), (LPCTSTR)strDevName, _T("계산된 글라스 보정값: -0.585, -0.022, 0.000, 0.000, 0.000, 0.043 (from UpdateGlassPoseAsync)"));
-	strMsg10.Format(_T("%s-%s"), (LPCTSTR)strDevName, _T("!@ElapsedTimeForTempScanSaving [ms]: 900 (from SaveTempScanFilesGlassCheck)"));
+	//strMsg1.Format(_T("%s-%s"), (LPCTSTR)strDevName, _T("InfoVehicleScanPose called (from InfoVehicleScanPose)"));
+	//strMsg2.Format(_T("%s-%s"), (LPCTSTR)strDevName, _T("다음 차체 촬영지점에서의 현재 로봇 포즈 1:  1447.75 -1956.92  721.496 -177.722 -30.9631  -2.1694 (from InfoVehicleScanPose)"));
+	//strMsg3.Format(_T("%s-%s"), (LPCTSTR)strDevName, _T("계산된 차체 보정값: 0.839, 1.174, -1.844, -0.058, -0.103, -0.019 (from UpdateInstallPosesToRobotAsync)"));
+	//strMsg4.Format(_T("%s-%s"), (LPCTSTR)strDevName, _T("장착 포즈를 로봇에 업데이트 하였습니다. (from UpdateInstallPosesToRobotAsync)"));
+	//strMsg5.Format(_T("%s-%s"), (LPCTSTR)strDevName, _T("Current ROI 1 glass_edge.back(): (140.000, 2.000) (from MeasureGap)"));
+	//strMsg6.Format(_T("%s-%s"), (LPCTSTR)strDevName, _T("갭 체크 용 글라스 데이터 준비 소요시간 [ms]: 17 (from MeasureGap)"));
+	//strMsg7.Format(_T("%s-%s"), (LPCTSTR)strDevName, _T("ROI 1 지점 갭 체크 측정 총 소요시간 [ms]: 55 ms (from MeasureGap)"));
+	//strMsg8.Format(_T("%s-%s"), (LPCTSTR)strDevName, _T("다음 글라스 촬영지점에서의 레퍼런스 로봇 포즈:  2045.08  275.316   1140.5 -178.798 -11.5987  -0.7857        0 (from InfoGlassScanPose)"));
+	//strMsg9.Format(_T("%s-%s"), (LPCTSTR)strDevName, _T("계산된 글라스 보정값: -0.585, -0.022, 0.000, 0.000, 0.000, 0.043 (from UpdateGlassPoseAsync)"));
+	//strMsg10.Format(_T("%s-%s"), (LPCTSTR)strDevName, _T("!@ElapsedTimeForTempScanSaving [ms]: 900 (from SaveTempScanFilesGlassCheck)"));
+
+	strMsg1.Format(_T("0-%s"), _T("InfoVehicleScanPose called (from InfoVehicleScanPose)"));
+	strMsg2.Format(_T("1-%s"), _T("다음 차체 촬영지점에서의 현재 로봇 포즈 1:  1447.75 -1956.92  721.496 -177.722 -30.9631  -2.1694 (from InfoVehicleScanPose)"));
+	strMsg3.Format(_T("2-%s"), _T("계산된 차체 보정값: 0.839, 1.174, -1.844, -0.058, -0.103, -0.019 (from UpdateInstallPosesToRobotAsync)"));
+	strMsg4.Format(_T("3-%s"), _T("장착 포즈를 로봇에 업데이트 하였습니다. (from UpdateInstallPosesToRobotAsync)"));
+	strMsg5.Format(_T("4-%s"), _T("Current ROI 1 glass_edge.back(): (140.000, 2.000) (from MeasureGap)"));
+	strMsg6.Format(_T("5-%s"), _T("갭 체크 용 글라스 데이터 준비 소요시간 [ms]: 17 (from MeasureGap)"));
+	strMsg7.Format(_T("6-%s"), _T("ROI 1 지점 갭 체크 측정 총 소요시간 [ms]: 55 ms (from MeasureGap)"));
+	strMsg8.Format(_T("7-%s"), _T("다음 글라스 촬영지점에서의 레퍼런스 로봇 포즈:  2045.08  275.316   1140.5 -178.798 -11.5987  -0.7857        0 (from InfoGlassScanPose)"));
+	strMsg9.Format(_T("8-%s"), _T("계산된 글라스 보정값: -0.585, -0.022, 0.000, 0.000, 0.000, 0.043 (from UpdateGlassPoseAsync)"));
+	strMsg10.Format(_T("9-%s"), _T("!@ElapsedTimeForTempScanSaving [ms]: 900 (from SaveTempScanFilesGlassCheck)"));
 
 	strLevel1 = "Debug"; // Debug;Info;Warning;Error;Critical;Off
 	strLevel2 = "Info";
 	strLevel3 = "Warning";
 	strLevel4 = "Error";
 	strLevel5 = "Critical";
-	strLevel6 = "Trace";
+	strLevel6 = "Info";
 	strLevel7 = "Critical";
 	strLevel8 = "Error";
 	strLevel9 = "Warning";
@@ -194,7 +209,7 @@ void CLogMakerDlg::initMsgs()
 bool CLogMakerDlg::initSpdLog()
 {
 	auto console_sink = std::make_shared<spdlog::sinks::wincolor_stdout_sink_mt>();
-	console_sink->set_level(spdlog::level::info);
+	console_sink->set_level(spdlog::level::trace);
 	console_sink->set_pattern("[multi_sink_example] [%^%l%$] %v");
 
 	time_t timer = time(NULL);
@@ -204,13 +219,13 @@ bool CLogMakerDlg::initSpdLog()
 	strftime(logFile, sizeof(logFile), "logs/%Y%m%d-%H%M%S.log", &now);
 
 	auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(logFile, true);
-	file_sink->set_level(spdlog::level::warn);
+	file_sink->set_level(spdlog::level::trace);
 
 	auto postgresql_sink = std::make_shared<spdlog::sinks::postgresql_sink>("cleclecle");
 	postgresql_sink->set_level(spdlog::level::trace);
 
 	m_pSpdLog = new spdlog::logger("multi_sink", { console_sink, file_sink, postgresql_sink });
-	m_pSpdLog->set_level(spdlog::level::trace);
+//	m_pSpdLog->set_level(spdlog::level::trace);
 
 //	m_pSpdLog->warn("this should appear in console, file, postgredb");
 
@@ -252,6 +267,8 @@ BOOL CLogMakerDlg::OnInitDialog()
 	m_pThreadSend = NULL;
 	initSpdLog();
 //	m_spdLog.initSpdLog("cleclecle");
+
+	::InitializeCriticalSection(&cs);
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -315,6 +332,7 @@ void CLogMakerDlg::closeAll()
 	if (m_pSpdLog) {
 		delete m_pSpdLog;
 	}
+	::DeleteCriticalSection(&cs);
 }
 
 void CLogMakerDlg::OnBnClickedOk()
@@ -431,7 +449,7 @@ void CLogMakerDlg::toSpdLog(CString strLvl, CString strMsg)
 		m_pSpdLog->error(CT2CA(strMsg));
 	else if (strLvl == "Critical")
 		m_pSpdLog->critical(CT2CA(strMsg));
-	else if (strLvl == "Trace")
+	else // if (strLvl == "Trace")
 		m_pSpdLog->trace(CT2CA(strMsg));
 //	else
 //		m_pSpdLog->off(CT2CA(strMsg));
@@ -440,19 +458,15 @@ void CLogMakerDlg::toSpdLog(CString strLvl, CString strMsg)
 
 bool CLogMakerDlg::sendDbMsg1(CString strLvl, CString strMsg)
 {
+	::EnterCriticalSection(&cs);
 	CString str = makeMsgBuf(strMsg, g_nSendCnt);
 	toSpdLog(strLvl, str);
-
-	//Log log;
-	//log.setLevel(std::string(CT2CA(strLvl)));
-	//log.setTimestamp("2023-02-14 16:14:13");
-	//log.setMessage(std::string(CT2CA(str)));
-	//m_logDao.insertLog(log);
 
 	g_nSendCnt++;
 	timeBeginPeriod(1);
 	Sleep(1);
 	timeEndPeriod(1);
+	::LeaveCriticalSection(&cs);
 	return true;
 }
 
@@ -470,13 +484,17 @@ void CLogMakerDlg::sendDbMsgCnt(CString strLvl, CString strMsg, UINT nCnt)
 	MessageBox(strElapsed);
 }
 
-void CLogMakerDlg::sendDbAllMsg()
+void CLogMakerDlg::sendDbAllMsg1()
 {
 	sendDbMsg1(strLevel1, strMsg1);
 	sendDbMsg1(strLevel2, strMsg2);
 	sendDbMsg1(strLevel3, strMsg3);
 	sendDbMsg1(strLevel4, strMsg4);
 	sendDbMsg1(strLevel5, strMsg5);
+}
+
+void CLogMakerDlg::sendDbAllMsg2()
+{
 	sendDbMsg1(strLevel6, strMsg6);
 	sendDbMsg1(strLevel7, strMsg7);
 	sendDbMsg1(strLevel8, strMsg8);
@@ -488,8 +506,21 @@ unsigned int WINAPI CLogMakerDlg::sendThread(void* arg)
 {
 	CLogMakerDlg* pDlg = (CLogMakerDlg*)arg;
 
-	while(pDlg->m_bSendRep) {
-		pDlg->sendDbAllMsg();
+	while (pDlg->m_bSendRep) {
+		pDlg->sendDbAllMsg1();
+		CString str;	str.Format(_T("%d"), g_nSendCnt);
+		pDlg->GetDlgItem(IDC_EDIT_SendCnt)->SetWindowTextW(str);
+	}
+
+	return 0;
+}
+
+unsigned int WINAPI CLogMakerDlg::sendThread2(void* arg)
+{
+	CLogMakerDlg* pDlg = (CLogMakerDlg*)arg;
+
+	while (pDlg->m_bSendRep) {
+		pDlg->sendDbAllMsg2();
 		CString str;	str.Format(_T("%d"), g_nSendCnt);
 		pDlg->GetDlgItem(IDC_EDIT_SendCnt)->SetWindowTextW(str);
 	}
@@ -510,13 +541,22 @@ void CLogMakerDlg::OnBnClickedCheckSendrep()
 		} else {
 			m_pThreadSend->ResumeThread();
 		}
+		if (m_pThreadSend2 == NULL) {
+			m_pThreadSend2 = AfxBeginThread(sendThread2, this);
+		}
+		else {
+			m_pThreadSend2->ResumeThread();
+		}
 	} else {
 		m_bSendRep = false;
 		GetDlgItem(IDC_CHECK_SendRep)->SetWindowTextW(_T("send rep"));
 		if (m_pThreadSend != NULL) {
 			m_pThreadSend->SuspendThread();
 		}
-		CString strElapsed; 
+		if (m_pThreadSend2 != NULL) {
+			m_pThreadSend2->SuspendThread();
+		}
+		CString strElapsed;
 		strElapsed.Format(_T("elapsed : %d sec, %d 개"), (clock() - m_nStartTime)/1000, g_nSendCnt);
 		CString str;	str.Format(_T("%d"), g_nSendCnt);
 		GetDlgItem(IDC_EDIT_SendCnt)->SetWindowTextW(str);
@@ -530,3 +570,4 @@ void CLogMakerDlg::OnClose()
 
 	CDialogEx::OnClose();
 }
+

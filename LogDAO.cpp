@@ -125,7 +125,7 @@ int LogDAO::UTF8ToAnsi(char* szSrc, char* strDest, int destSize)
 bool LogDAO::initLogDao(std::string strPasswd)
 {
 	std::string connectionString;
-	connectionString = "dbname = quickstartdb user = postgres password = " + strPasswd + " hostaddr = 127.0.0.1 port = 5432";
+	connectionString = "dbname =  postgres user = postgres password = " + strPasswd + " hostaddr = 127.0.0.1 port = 5432";
 	m_pdbC = new pqxx::connection(connectionString);
 
 	if (m_pdbC->is_open()) {

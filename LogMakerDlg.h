@@ -10,8 +10,6 @@
 
 #define sleep(x) Sleep((x)*1000)
 
-
-
 // CLogMakerDlg 대화 상자
 class CLogMakerDlg : public CDialogEx
 {
@@ -74,19 +72,19 @@ public:
 	int nCnt9;
 	int nCnt10;
 
-
 private:
 	unsigned int m_nStartTime;
+	CWinThread* m_pThreadSend;
+	CWinThread* m_pThreadSend2;
+	spdlog::logger* m_pSpdLog;
+
 	bool sendDbMsg1(CString strLvl, CString strMsg);
 	void sendDbMsgCnt(CString strLvl, CString strMsg, UINT nCnt);
 
 	void initMsgs();
-	CWinThread* m_pThreadSend;
 	void closeAll();
 
 	CString makeMsgBuf(CString strMsg, UINT nPlusNo);
-
-	spdlog::logger* m_pSpdLog;
 
 	void toSpdLog(CString strLvl, CString strMsg);
 	bool initSpdLog();
@@ -102,14 +100,19 @@ public:
 	afx_msg void OnBnClickedButtonSend9();
 	afx_msg void OnBnClickedButtonSend10();
 	afx_msg void OnBnClickedCheckSendrep();
+	afx_msg void OnBnClickedCheckSendrep2();
 
 	static unsigned int WINAPI sendThread(void* arg);
+	static unsigned int WINAPI sendThread2(void* arg);
 
 	bool m_bSendRep;
 
-	void sendDbAllMsg();
+	void sendDbAllMsg1();
+	void sendDbAllMsg2();
+
 	static void printDebugString(const WCHAR* format, ...);
 	static void printDebugString(const char* format, ...);
 	
 	afx_msg void OnClose();
+	CRITICAL_SECTION cs;
 };
