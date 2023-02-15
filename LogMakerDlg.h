@@ -1,16 +1,14 @@
 ﻿
 // LogMakerDlg.h: 헤더 파일
 //
-#pragma once
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
-#include "spdlog/spdlog.h"
-#include "spdlog/sinks/basic_file_sink.h"
+#include "postgresql_sink.h"
+
+#pragma once
 
 #define sleep(x) Sleep((x)*1000)
-
-
 
 // CLogMakerDlg 대화 상자
 class CLogMakerDlg : public CDialogEx
