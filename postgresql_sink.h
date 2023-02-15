@@ -25,7 +25,7 @@ namespace spdlog
 			void set_pattern(const std::string& pattern) override {};
 			void set_formatter(std::unique_ptr<spdlog::formatter> sink_formatter) override {};
 
-			void initSpdLog(const std::string& strPasswd)
+			void initSpdLog(const std::string& strSqlPasswd, spdlog::level::level_enum lvl)
 			{
 				auto console_sink = std::make_shared<spdlog::sinks::wincolor_stdout_sink_mt>();
 				console_sink->set_level(spdlog::level::info);
@@ -35,16 +35,16 @@ namespace spdlog
 				struct tm now;
 				localtime_s(&now, &timer);
 				char logFile[27];
-				strftime(logFile, sizeof(logFile), "log/%Y%m%d-HH:mm:ss.log", &now);
+				strftime(logFile, sizeof(logFile), "log/%Y%m%d-%H%M%S.log", &now);
 
 				auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(logFile, true);
-				file_sink->set_level(spdlog::level::warn);
+				file_sink->set_level(lvl);
 
-				auto postgresql_sink = std::make_shared<spdlog::sinks::postgresql_sink>(strPasswd);
-				postgresql_sink->set_level(spdlog::level::trace);
+				auto postgresql_sink = std::make_shared<spdlog::sinks::postgresql_sink>(strSqlPasswd);
+				postgresql_sink->set_level(lvl);
 
 				m_pLogger = new spdlog::logger("multi_sink", { console_sink, file_sink, postgresql_sink });
-				m_pLogger->set_level(spdlog::level::trace);
+				m_pLogger->set_level(lvl);
 			}
 
 			explicit postgresql_sink(const std::string& strPasswd)
