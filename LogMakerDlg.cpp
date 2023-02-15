@@ -7,9 +7,12 @@
 #include "LogMaker.h"
 #include "LogMakerDlg.h"
 #include "afxdialogex.h"
+#include "timeapi.h"
+
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/basic_file_sink.h"
-#include "timeapi.h"
+#include "postgresql_sink.h"
+
 
 #include <string>
 #include <cstring>
@@ -194,7 +197,13 @@ bool CLogMakerDlg::initSpdLog()
 	console_sink->set_level(spdlog::level::info);
 	console_sink->set_pattern("[multi_sink_example] [%^%l%$] %v");
 
-	auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/multisink.txt", true);
+	time_t timer = time(NULL);
+	struct tm now;
+	localtime_s(&now, &timer);
+	char logFile[128]; //[27];
+	strftime(logFile, sizeof(logFile), "logs/%Y%m%d-%H%M%S.log", &now);
+
+	auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(logFile, true);
 	file_sink->set_level(spdlog::level::warn);
 
 	auto postgresql_sink = std::make_shared<spdlog::sinks::postgresql_sink>("cleclecle");
@@ -241,8 +250,8 @@ BOOL CLogMakerDlg::OnInitDialog()
 
 	initMsgs();
 	m_pThreadSend = NULL;
-
 	initSpdLog();
+//	m_spdLog.initSpdLog("cleclecle");
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
