@@ -16,12 +16,8 @@ namespace spdlog
 		{
 		private:
 			LogDAO m_logDao;
-<<<<<<< Updated upstream
-			
-=======
 			spdlog::logger* m_pLogger = NULL;
 //			spdlog::sinks::wincolor_stdout_sink_mt m_pSinkConsole = new spdlog::sinks::wincolor_stdout_sink_mt();
->>>>>>> Stashed changes
 		public:
 			void set_pattern(const std::string& pattern) override {};
 			void set_formatter(std::unique_ptr<spdlog::formatter> sink_formatter) override {};
