@@ -203,8 +203,6 @@ bool CLogMakerDlg::initSpdLog()
 	m_pSpdLog = new spdlog::logger("multi_sink", { console_sink, file_sink, postgresql_sink });
 	m_pSpdLog->set_level(spdlog::level::trace);
 
-//	m_pSpdLog->warn("this should appear in console, file, postgredb");
-
 	return true;
 }
 

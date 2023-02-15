@@ -10,8 +10,6 @@
 
 #define sleep(x) Sleep((x)*1000)
 
-
-
 // CLogMakerDlg 대화 상자
 class CLogMakerDlg : public CDialogEx
 {
