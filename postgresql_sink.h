@@ -2,14 +2,11 @@
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/sink.h"
 #include "spdlog/details/log_msg.h"
-#include "spdlog/sinks/basic_file_sink.h"
 #include "spdlog/common.h"
 #include <vector>
 #include <pqxx/pqxx>
-#include <time.h>
 #include "Log.h"
 #include "LogDAO.h"
-
 
 namespace spdlog
 {
@@ -20,7 +17,7 @@ namespace spdlog
 		private:
 			LogDAO m_logDao;
 			spdlog::logger* m_pLogger = NULL;
-			
+//			spdlog::sinks::wincolor_stdout_sink_mt m_pSinkConsole = new spdlog::sinks::wincolor_stdout_sink_mt();
 		public:
 			void set_pattern(const std::string& pattern) override {};
 			void set_formatter(std::unique_ptr<spdlog::formatter> sink_formatter) override {};
@@ -79,8 +76,6 @@ namespace spdlog
 			~postgresql_sink()
 			{
 				m_logDao.closeConnection();
-				if (m_pLogger)
-					delete m_pLogger;
 			}
 
 			void flush() override

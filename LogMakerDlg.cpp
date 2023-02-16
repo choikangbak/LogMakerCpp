@@ -7,12 +7,9 @@
 #include "LogMaker.h"
 #include "LogMakerDlg.h"
 #include "afxdialogex.h"
-#include "timeapi.h"
-
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/basic_file_sink.h"
-#include "postgresql_sink.h"
-
+#include "timeapi.h"
 
 #include <string>
 #include <cstring>
@@ -227,8 +224,6 @@ bool CLogMakerDlg::initSpdLog()
 	m_pSpdLog = new spdlog::logger("3sink", { console_sink, file_sink, postgresql_sink });
 	m_pSpdLog->set_level(spdlog::level::trace);
 
-//	m_pSpdLog->warn("this should appear in console, file, postgredb");
-
 	return true;
 }
 
@@ -265,8 +260,8 @@ BOOL CLogMakerDlg::OnInitDialog()
 
 	initMsgs();
 	m_pThreadSend = NULL;
+
 	initSpdLog();
-//	m_spdLog.initSpdLog("cleclecle");
 
 	::InitializeCriticalSection(&cs);
 
