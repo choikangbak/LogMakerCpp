@@ -29,7 +29,7 @@ namespace spdlog
 			{
 				auto console_sink = std::make_shared<spdlog::sinks::wincolor_stdout_sink_mt>();
 				console_sink->set_level(spdlog::level::info);
-				console_sink->set_pattern("[multi_sink_example] [%^%l%$] %v");
+				console_sink->set_pattern("[%^%l%$] %v");
 
 				time_t timer = time(NULL);
 				struct tm now;
@@ -43,7 +43,7 @@ namespace spdlog
 				auto postgresql_sink = std::make_shared<spdlog::sinks::postgresql_sink>(strSqlPasswd);
 				postgresql_sink->set_level(lvl);
 
-				m_pLogger = new spdlog::logger("multi_sink", { console_sink, file_sink, postgresql_sink });
+				m_pLogger = new spdlog::logger("3sink", { console_sink, file_sink, postgresql_sink });
 				m_pLogger->set_level(lvl);
 			}
 

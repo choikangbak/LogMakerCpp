@@ -192,7 +192,7 @@ void CLogMakerDlg::initMsgs()
 	strMsg9.Format(_T("8-%s"), _T("계산된 글라스 보정값: -0.585, -0.022, 0.000, 0.000, 0.000, 0.043 (from UpdateGlassPoseAsync)"));
 	strMsg10.Format(_T("9-%s"), _T("!@ElapsedTimeForTempScanSaving [ms]: 900 (from SaveTempScanFilesGlassCheck)"));
 
-	strLevel1 = "Debug"; // Debug;Info;Warning;Error;Critical;Off
+	strLevel1 = "Error"; // Debug;Info;Warning;Error;Critical;Off
 	strLevel2 = "Info";
 	strLevel3 = "Warning";
 	strLevel4 = "Error";
@@ -210,7 +210,7 @@ bool CLogMakerDlg::initSpdLog()
 {
 	auto console_sink = std::make_shared<spdlog::sinks::wincolor_stdout_sink_mt>();
 	console_sink->set_level(spdlog::level::trace);
-	console_sink->set_pattern("[multi_sink_example] [%^%l%$] %v");
+	console_sink->set_pattern("[%^%l%$] %v");
 
 	time_t timer = time(NULL);
 	struct tm now;
@@ -224,8 +224,8 @@ bool CLogMakerDlg::initSpdLog()
 	auto postgresql_sink = std::make_shared<spdlog::sinks::postgresql_sink>("cleclecle");
 	postgresql_sink->set_level(spdlog::level::trace);
 
-	m_pSpdLog = new spdlog::logger("multi_sink", { console_sink, file_sink, postgresql_sink });
-//	m_pSpdLog->set_level(spdlog::level::trace);
+	m_pSpdLog = new spdlog::logger("3sink", { console_sink, file_sink, postgresql_sink });
+	m_pSpdLog->set_level(spdlog::level::trace);
 
 //	m_pSpdLog->warn("this should appear in console, file, postgredb");
 
@@ -453,7 +453,6 @@ void CLogMakerDlg::toSpdLog(CString strLvl, CString strMsg)
 		m_pSpdLog->trace(CT2CA(strMsg));
 //	else
 //		m_pSpdLog->off(CT2CA(strMsg));
-
 }
 
 bool CLogMakerDlg::sendDbMsg1(CString strLvl, CString strMsg)
