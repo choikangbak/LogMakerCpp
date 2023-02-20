@@ -7,14 +7,12 @@
 #include "LogMaker.h"
 #include "LogMakerDlg.h"
 #include "afxdialogex.h"
-#include "spdlog/spdlog.h"
-#include "spdlog/sinks/basic_file_sink.h"
 #include "timeapi.h"
 
 #include <string>
 #include <cstring>
 #include <cmath>
-#include <pqxx/pqxx>
+
 
 
 #ifdef _DEBUG
@@ -94,7 +92,7 @@ CLogMakerDlg::CLogMakerDlg(CWnd* pParent /*=nullptr*/)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
-	m_pSpdLog = NULL;
+//	m_pSpdLog = NULL;
 
 	m_pThreadSend = NULL;
 	m_pThreadSend2 = NULL;
@@ -205,26 +203,35 @@ void CLogMakerDlg::initMsgs()
 
 bool CLogMakerDlg::initSpdLog()
 {
-	auto console_sink = std::make_shared<spdlog::sinks::wincolor_stdout_sink_mt>();
-	console_sink->set_level(spdlog::level::trace);
-	console_sink->set_pattern("[%^%l%$] %v");
-
-	time_t timer = time(NULL);
-	struct tm now;
-	localtime_s(&now, &timer);
-	char logFile[128]; //[27];
-	strftime(logFile, sizeof(logFile), "logs/%Y%m%d-%H%M%S.log", &now);
-
-	auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(logFile, true);
-	file_sink->set_level(spdlog::level::trace);
-
-	auto postgresql_sink = std::make_shared<spdlog::sinks::postgresql_sink>("cleclecle");
-	postgresql_sink->set_level(spdlog::level::trace);
-
-	m_pSpdLog = new spdlog::logger("3sink", { console_sink, file_sink, postgresql_sink });
-	m_pSpdLog->set_level(spdlog::level::trace);
-
+	m_cLoger.initCleLogger("cle", spdlog::level::trace);
 	return true;
+//	auto console_sink = std::make_shared<spdlog::sinks::wincolor_stdout_sink_mt>();
+//	console_sink->set_level(spdlog::level::trace);
+//	console_sink->set_pattern("[%^%l%$] %v");
+//
+//	time_t timer = time(NULL);
+//	struct tm now;
+//	localtime_s(&now, &timer);
+//	char logFile[128]; //[27];
+//	strftime(logFile, sizeof(logFile), "logs/%Y%m%d-%H%M%S.log", &now);
+//
+//	auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(logFile, true);
+////	auto file_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(logFile, 1024*1024*1024);
+//	file_sink->set_level(spdlog::level::trace);
+//	spdlog::flush_every(std::chrono::seconds(1));
+//
+//	try {
+//		auto postgresql_sink = std::make_shared<spdlog::sinks::postgresql_sink>("cle");
+//		postgresql_sink->set_level(spdlog::level::trace);
+//
+//		m_pSpdLog = new spdlog::logger("3sink", { console_sink, file_sink, postgresql_sink });
+//		m_pSpdLog->set_level(spdlog::level::trace);
+//		return true;
+//	} catch(...) {
+//		std::cout << "initSpdLog postgresql_sink Error. logs can not to reach DB" << std::endl;
+////		MessageBox(_T("initSpdLog postgresql_sink Error"));
+//		return false;
+//	}
 }
 
 BOOL CLogMakerDlg::OnInitDialog()
@@ -262,8 +269,6 @@ BOOL CLogMakerDlg::OnInitDialog()
 	m_pThreadSend = NULL;
 
 	initSpdLog();
-
-	::InitializeCriticalSection(&cs);
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -324,10 +329,10 @@ void CLogMakerDlg::closeAll()
 		GetExitCodeThread(m_pThreadSend->m_hThread, &dwResult);
 		delete m_pThreadSend;
 	}
-	if (m_pSpdLog) {
-		delete m_pSpdLog;
-	}
-	::DeleteCriticalSection(&cs);
+	//if (m_pSpdLog) {
+	//	delete m_pSpdLog;
+	//}
+
 }
 
 void CLogMakerDlg::OnBnClickedOk()
@@ -340,41 +345,41 @@ void CLogMakerDlg::OnBnClickedOk()
 void CLogMakerDlg::OnBnClickedButtonSend1()
 {
 	UpdateData();
-	sendDbMsgCnt(strLevel1, strMsg1, nCnt1);
+	sendLogMsgCnt(strLevel1, strMsg1, nCnt1);
 }
 
 void CLogMakerDlg::OnBnClickedButtonSend2()
 {
 	UpdateData();
-	sendDbMsgCnt(strLevel2, strMsg2, nCnt2);
+	sendLogMsgCnt(strLevel2, strMsg2, nCnt2);
 }
 
 
 void CLogMakerDlg::OnBnClickedButtonSend3()
 {
 	UpdateData();
-	sendDbMsgCnt(strLevel3, strMsg3, nCnt3);
+	sendLogMsgCnt(strLevel3, strMsg3, nCnt3);
 }
 
 
 void CLogMakerDlg::OnBnClickedButtonSend4()
 {
 	UpdateData();
-	sendDbMsgCnt(strLevel4, strMsg4, nCnt4);
+	sendLogMsgCnt(strLevel4, strMsg4, nCnt4);
 }
 
 
 void CLogMakerDlg::OnBnClickedButtonSend5()
 {
 	UpdateData();
-	sendDbMsgCnt(strLevel5, strMsg5, nCnt5);
+	sendLogMsgCnt(strLevel5, strMsg5, nCnt5);
 }
 
 
 void CLogMakerDlg::OnBnClickedButtonSend6()
 {
 	UpdateData();
-	sendDbMsgCnt(strLevel6, strMsg6, nCnt6);
+	sendLogMsgCnt(strLevel6, strMsg6, nCnt6);
 
 }
 
@@ -382,26 +387,26 @@ void CLogMakerDlg::OnBnClickedButtonSend6()
 void CLogMakerDlg::OnBnClickedButtonSend7()
 {
 	UpdateData();
-	sendDbMsgCnt(strLevel7, strMsg7, nCnt7);
+	sendLogMsgCnt(strLevel7, strMsg7, nCnt7);
 }
 
 
 void CLogMakerDlg::OnBnClickedButtonSend8()
 {
 	UpdateData();
-	sendDbMsgCnt(strLevel8, strMsg8, nCnt8);
+	sendLogMsgCnt(strLevel8, strMsg8, nCnt8);
 }
 
 void CLogMakerDlg::OnBnClickedButtonSend9()
 {
 	UpdateData();
-	sendDbMsgCnt(strLevel9, strMsg9, nCnt9);
+	sendLogMsgCnt(strLevel9, strMsg9, nCnt9);
 }
 
 void CLogMakerDlg::OnBnClickedButtonSend10()
 {
 	UpdateData();
-	sendDbMsgCnt(strLevel10, strMsg10, nCnt10);
+	sendLogMsgCnt(strLevel10, strMsg10, nCnt10);
 }
 
 void CLogMakerDlg::printDebugString(const WCHAR* format, ...)
@@ -435,40 +440,40 @@ CString CLogMakerDlg::makeMsgBuf(CString strMsg, UINT nPlusNo)
 void CLogMakerDlg::toSpdLog(CString strLvl, CString strMsg)
 {
 	if (strLvl == "Debug")
-		m_pSpdLog->debug(CT2CA(strMsg));
+		m_cLoger.debug(CT2CA(strMsg));
+//		m_pSpdLog->debug(CT2CA(strMsg));
 	else if (strLvl == "Info")
-		m_pSpdLog->info(CT2CA(strMsg));
+		m_cLoger.info(CT2CA(strMsg));
 	else if (strLvl == "Warning")
-		m_pSpdLog->warn(CT2CA(strMsg));
+		m_cLoger.warn(CT2CA(strMsg));
 	else if (strLvl == "Error")
-		m_pSpdLog->error(CT2CA(strMsg));
+		m_cLoger.error(CT2CA(strMsg));
 	else if (strLvl == "Critical")
-		m_pSpdLog->critical(CT2CA(strMsg));
+		m_cLoger.critical(CT2CA(strMsg));
 	else // if (strLvl == "Trace")
-		m_pSpdLog->trace(CT2CA(strMsg));
+		m_cLoger.trace(CT2CA(strMsg));
 //	else
 //		m_pSpdLog->off(CT2CA(strMsg));
 }
 
-bool CLogMakerDlg::sendDbMsg1(CString strLvl, CString strMsg)
+bool CLogMakerDlg::sendLogMsg1(CString strLvl, CString strMsg)
 {
-	::EnterCriticalSection(&cs);
-	CString str = makeMsgBuf(strMsg, g_nSendCnt);
+
+	CString str = makeMsgBuf(strMsg, g_nSendCnt++);
 	toSpdLog(strLvl, str);
 
-	g_nSendCnt++;
 	timeBeginPeriod(1);
 	Sleep(1);
 	timeEndPeriod(1);
-	::LeaveCriticalSection(&cs);
+
 	return true;
 }
 
-void CLogMakerDlg::sendDbMsgCnt(CString strLvl, CString strMsg, UINT nCnt)
+void CLogMakerDlg::sendLogMsgCnt(CString strLvl, CString strMsg, UINT nCnt)
 {
 	unsigned int tStart = clock();
 	for (UINT i = 0; i < nCnt; i++) {
-		sendDbMsg1(strLvl, strMsg);
+		sendLogMsg1(strLvl, strMsg);
 	}
 	CString strElapsed;
 	strElapsed.Format(_T("elapsed : %d sec"), (clock() - tStart) / 1000);
@@ -478,22 +483,22 @@ void CLogMakerDlg::sendDbMsgCnt(CString strLvl, CString strMsg, UINT nCnt)
 	MessageBox(strElapsed);
 }
 
-void CLogMakerDlg::sendDbAllMsg1()
+void CLogMakerDlg::sendLogAllMsg1()
 {
-	sendDbMsg1(strLevel1, strMsg1);
-	sendDbMsg1(strLevel2, strMsg2);
-	sendDbMsg1(strLevel3, strMsg3);
-	sendDbMsg1(strLevel4, strMsg4);
-	sendDbMsg1(strLevel5, strMsg5);
+	sendLogMsg1(strLevel1, strMsg1);
+	sendLogMsg1(strLevel2, strMsg2);
+	sendLogMsg1(strLevel3, strMsg3);
+	sendLogMsg1(strLevel4, strMsg4);
+	sendLogMsg1(strLevel5, strMsg5);
 }
 
-void CLogMakerDlg::sendDbAllMsg2()
+void CLogMakerDlg::sendLogAllMsg2()
 {
-	sendDbMsg1(strLevel6, strMsg6);
-	sendDbMsg1(strLevel7, strMsg7);
-	sendDbMsg1(strLevel8, strMsg8);
-	sendDbMsg1(strLevel9, strMsg9);
-	sendDbMsg1(strLevel10, strMsg10);
+	sendLogMsg1(strLevel6, strMsg6);
+	sendLogMsg1(strLevel7, strMsg7);
+	sendLogMsg1(strLevel8, strMsg8);
+	sendLogMsg1(strLevel9, strMsg9);
+	sendLogMsg1(strLevel10, strMsg10);
 }
 
 unsigned int WINAPI CLogMakerDlg::sendThread(void* arg)
@@ -501,7 +506,7 @@ unsigned int WINAPI CLogMakerDlg::sendThread(void* arg)
 	CLogMakerDlg* pDlg = (CLogMakerDlg*)arg;
 
 	while (pDlg->m_bSendRep) {
-		pDlg->sendDbAllMsg1();
+		pDlg->sendLogAllMsg1();
 		CString str;	str.Format(_T("%d"), g_nSendCnt);
 		pDlg->GetDlgItem(IDC_EDIT_SendCnt)->SetWindowTextW(str);
 	}
@@ -514,7 +519,7 @@ unsigned int WINAPI CLogMakerDlg::sendThread2(void* arg)
 	CLogMakerDlg* pDlg = (CLogMakerDlg*)arg;
 
 	while (pDlg->m_bSendRep) {
-		pDlg->sendDbAllMsg2();
+		pDlg->sendLogAllMsg2();
 		CString str;	str.Format(_T("%d"), g_nSendCnt);
 		pDlg->GetDlgItem(IDC_EDIT_SendCnt)->SetWindowTextW(str);
 	}

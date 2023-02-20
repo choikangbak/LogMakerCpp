@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
-#include "postgresql_sink.h"
+#include "CleLogger.h"
 
 #pragma once
 
@@ -76,10 +76,11 @@ private:
 	unsigned int m_nStartTime;
 	CWinThread* m_pThreadSend;
 	CWinThread* m_pThreadSend2;
-	spdlog::logger* m_pSpdLog;
+	//spdlog::logger* m_pSpdLog;
+	CleLogger m_cLoger;
 
-	bool sendDbMsg1(CString strLvl, CString strMsg);
-	void sendDbMsgCnt(CString strLvl, CString strMsg, UINT nCnt);
+	bool sendLogMsg1(CString strLvl, CString strMsg);
+	void sendLogMsgCnt(CString strLvl, CString strMsg, UINT nCnt);
 
 	void initMsgs();
 	void closeAll();
@@ -107,12 +108,12 @@ public:
 
 	bool m_bSendRep;
 
-	void sendDbAllMsg1();
-	void sendDbAllMsg2();
+	void sendLogAllMsg1();
+	void sendLogAllMsg2();
 
 	static void printDebugString(const WCHAR* format, ...);
 	static void printDebugString(const char* format, ...);
 	
 	afx_msg void OnClose();
-	CRITICAL_SECTION cs;
+
 };
