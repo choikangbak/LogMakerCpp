@@ -4,11 +4,13 @@
 #include "spdlog/details/log_msg.h"
 #include "spdlog/sinks/basic_file_sink.h"
 #include "spdlog/sinks/rotating_file_sink.h"
+#include "spdlog/sinks/callback_sink1.h"
+#include "spdlog/sinks/ostream_sink.h"
 #include "spdlog/common.h"
 #include "spdlog/logger.h"
 #include "spdlog/details/fmt_helper.h"
-
-#include <spdlog/details/backtracer.h>
+//#include <spdlog/details/backtracer.h>
+#include <sstream>
 
 #include <vector>
 #include <pqxx/pqxx>
@@ -20,7 +22,8 @@ namespace spdlog
 {
 	namespace sinks 
 	{
-		class postgresql_sink : public sink
+//		template<typename Mutex>
+		class postgresql_sink : public sink// public base_sink<Mutex>
 		{
 		private:
 			CRITICAL_SECTION cs;
@@ -44,13 +47,14 @@ class CleLogger
 {
 private:
 	spdlog::logger* m_pLogger;
+	std::ostringstream m_oss;
 
 public:
 	CleLogger();
 
 	~CleLogger();
 
-	void initCleLogger(const std::string& strSqlPasswd, spdlog::level::level_enum lvl);
+	void initCleLogger(const std::string& strSqlPasswd, spdlog::level::level_enum lvl, void* func);
 
 	template<typename... Args>	void trace(const char* fmt, const Args &...args) { m_pLogger->trace(fmt, args); }
 	template<typename... Args>	void debug(const char* fmt, const Args &...args) { m_pLogger->debug(fmt, args); }

@@ -77,6 +77,7 @@ private:
 	CWinThread* m_pThreadSend;
 	CWinThread* m_pThreadSend2;
 	//spdlog::logger* m_pSpdLog;
+
 	CleLogger m_cLoger;
 
 	bool sendLogMsg1(CString strLvl, CString strMsg);
@@ -115,5 +116,6 @@ public:
 	static void printDebugString(const char* format, ...);
 	
 	afx_msg void OnClose();
-
+	static void callbackLog(std::string strLog);
+	CString m_strSendLogs;
 };

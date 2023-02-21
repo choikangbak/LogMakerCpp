@@ -44,11 +44,11 @@ CleLogger::~CleLogger()
 	if (m_pLogger)		delete m_pLogger;
 }
 
-void CleLogger::initCleLogger(const std::string& strSqlPasswd, spdlog::level::level_enum lvl)
+void CleLogger::initCleLogger(const std::string& strSqlPasswd, spdlog::level::level_enum lvl, void* func)
 {
-	auto console_sink = std::make_shared<spdlog::sinks::wincolor_stdout_sink_mt>();
-	console_sink->set_level(lvl);
-	console_sink->set_pattern("[%^%l%$] %v");
+	auto sinkConsole = std::make_shared<spdlog::sinks::wincolor_stdout_sink_mt>();
+	//sinkConsole->set_level(lvl);
+	sinkConsole->set_pattern("[%^%l%$] %v");
 
 	time_t timer = time(NULL);
 	struct tm now;
@@ -56,19 +56,26 @@ void CleLogger::initCleLogger(const std::string& strSqlPasswd, spdlog::level::le
 	char logFile[128]; //[27];
 	strftime(logFile, sizeof(logFile), "logs/%Y%m%d-%H%M%S.log", &now);
 
-	auto file_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(logFile, 1024*1024*1024, 5);	// 1기가씩 최대 5개
-	file_sink->set_level(lvl);
+	auto sinkFile = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(logFile, 1024*1024*1024, 30);	// 1기가씩 최대 ?개
+	//sinkFile->set_level(lvl);
+
+	auto sinkGui = std::make_shared<spdlog::sinks::callback_sink_mt>((CALLBACK_FUNC)func);
+
+	//sinkGui->set_level(lvl);
+
+	auto sinkOss = std::make_shared<spdlog::sinks::ostream_sink_mt>(m_oss);
+
 	spdlog::flush_every(std::chrono::seconds(1));
 
 	try {
-		auto postgresql_sink = std::make_shared<spdlog::sinks::postgresql_sink>("cle");
-		postgresql_sink->set_level(lvl);
+		auto sinkPostgre = std::make_shared<spdlog::sinks::postgresql_sink>("cle");
+		sinkPostgre->set_level(lvl);
 
-		m_pLogger = new spdlog::logger("CleSink", { console_sink, file_sink, postgresql_sink });
+		m_pLogger = new spdlog::logger("CleSink", { sinkConsole, sinkFile, sinkGui, sinkPostgre });
 	}
 	catch (...) {
 		std::cout << "initSpdLog postgresql_sink Error. logs can not to reach DB" << std::endl;
-		m_pLogger = new spdlog::logger("CleSink", { console_sink, file_sink });
+		m_pLogger = new spdlog::logger("CleSink", { sinkConsole, sinkFile, sinkGui });
 	}
-	m_pLogger->set_level(lvl);
+	//m_pLogger->set_level(lvl);
 }

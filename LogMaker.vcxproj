@@ -194,6 +194,7 @@
     <ClInclude Include="CleLogger.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="include\spdlog\logger.h" />
+    <ClInclude Include="include\spdlog\sinks\callback_sink1.h" />
     <ClInclude Include="include\spdlog\spdlog.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="LogDAO.h" />
