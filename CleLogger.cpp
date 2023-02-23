@@ -38,44 +38,56 @@ spdlog::sinks::postgresql_sink::~postgresql_sink()
 CleLogger::CleLogger()
 {
 	m_pLogger = NULL;
+	memset(m_bSink, false, sizeof(m_bSink));
+	memset(m_lvl, spdlog::level::trace, sizeof(m_lvl));
 }
+
 CleLogger::~CleLogger()
 {
 	if (m_pLogger)		delete m_pLogger;
 }
 
-void CleLogger::initCleLogger(const std::string& strSqlPasswd, spdlog::level::level_enum lvl, void* func)
+void CleLogger::initCleLogger(const std::string& strDir, QTextEdit* pQEdit, void* func, const std::string& strSqlPasswd)
 {
-	auto sinkConsole = std::make_shared<spdlog::sinks::wincolor_stdout_sink_mt>();
-	//sinkConsole->set_level(lvl);
-	sinkConsole->set_pattern("[%^%l%$] %v");
-
-	time_t timer = time(NULL);
-	struct tm now;
-	localtime_s(&now, &timer);
-	char logFile[128]; //[27];
-	strftime(logFile, sizeof(logFile), "logs/%Y%m%d-%H%M%S.log", &now);
-
-	auto sinkFile = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(logFile, 1024*1024*1024, 30);	// 1기가씩 최대 ?개
-	//sinkFile->set_level(lvl);
-
-	auto sinkGui = std::make_shared<spdlog::sinks::callback_sink_mt>((CALLBACK_FUNC)func);
-
-	//sinkGui->set_level(lvl);
-
-	auto sinkOss = std::make_shared<spdlog::sinks::ostream_sink_mt>(m_oss);
-
-	spdlog::flush_every(std::chrono::seconds(1));
-
-	try {
-		auto sinkPostgre = std::make_shared<spdlog::sinks::postgresql_sink>("cle");
-		sinkPostgre->set_level(lvl);
-
-		m_pLogger = new spdlog::logger("CleSink", { sinkConsole, sinkFile, sinkGui, sinkPostgre });
+	std::vector<spdlog::sink_ptr> sinks;
+	if (m_bSink[0]) {
+		sinks.push_back(std::make_shared<spdlog::sinks::wincolor_stdout_sink_mt>());
+		sinks[0]->set_pattern("[%^%l%$] %v");
+		sinks[0]->set_level(m_lvl[0]);
 	}
-	catch (...) {
-		std::cout << "initSpdLog postgresql_sink Error. logs can not to reach DB" << std::endl;
-		m_pLogger = new spdlog::logger("CleSink", { sinkConsole, sinkFile, sinkGui });
+	if (m_bSink[1]) {
+		time_t timer = time(NULL);
+		struct tm now;	localtime_s(&now, &timer);
+
+		char logFile[128]; //[27];
+		std::string strFormat = strDir + "/%Y%m%d-%H%M%S.log";
+		strftime(logFile, sizeof(logFile), strFormat.c_str(), &now);
+
+		sinks.push_back(std::make_shared<spdlog::sinks::rotating_file_sink_mt>(logFile, 1024 * 1024 * 1024, 30));	// 1기가씩 최대 ?개
+		sinks.back()->set_level(m_lvl[1]);
 	}
-	//m_pLogger->set_level(lvl);
+	if (m_bSink[2] && pQEdit) {
+		sinks.push_back(std::make_shared<spdlog::sinks::qt_sink_mt>(pQEdit, "append"));
+		sinks.back()->set_level(m_lvl[2]);
+	}
+	if (m_bSink[3] && func) {
+		sinks.push_back(std::make_shared < spdlog::sinks::callback_sink_mt>((CALLBACK_FUNC)func));
+		sinks.back()->set_level(m_lvl[3]);
+	}
+	if (m_bSink[4]) {
+		try {
+			auto sinkPostgre = std::make_shared<spdlog::sinks::postgresql_sink>(strSqlPasswd);
+			sinks.push_back(sinkPostgre);
+			sinks.back()->set_level(m_lvl[4]);
+		}
+		catch (...) {
+			std::cout << "initSpdLog postgresql_sink Error. logs can not to reach DB" << std::endl;
+		}
+	}
+//	auto sinkOss = std::make_shared<spdlog::sinks::ostream_sink_mt>(m_oss);
+	m_pLogger = new spdlog::logger("CleSink", sinks.begin(), sinks.end());
+
+	m_pLogger->set_level(spdlog::level::trace);
+
+	spdlog::flush_every(std::chrono::seconds(1));	// 확인해야함
 }

@@ -198,40 +198,26 @@ void CLogMakerDlg::initMsgs()
 	strLevel9 = "Warning";
 	strLevel10 = "Info";
 
+	m_strSendLogs = "";
 	UpdateData(FALSE);
 }
 
 bool CLogMakerDlg::initSpdLog()
 {
-	m_cLoger.initCleLogger("cle", spdlog::level::trace);
+	m_cLoger.setOnOffSink(true, true, false, true, true);	// Console, File, QtUi, Callback, Sql
+	m_cLoger.setLevels(spdlog::level::info, spdlog::level::warn, spdlog::level::off, spdlog::level::critical, spdlog::level::trace);
+	m_cLoger.initCleLogger("logs", NULL, callbackLog, "cle");
 	return true;
-//	auto console_sink = std::make_shared<spdlog::sinks::wincolor_stdout_sink_mt>();
-//	console_sink->set_level(spdlog::level::trace);
-//	console_sink->set_pattern("[%^%l%$] %v");
-//
-//	time_t timer = time(NULL);
-//	struct tm now;
-//	localtime_s(&now, &timer);
-//	char logFile[128]; //[27];
-//	strftime(logFile, sizeof(logFile), "logs/%Y%m%d-%H%M%S.log", &now);
-//
-//	auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(logFile, true);
-////	auto file_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(logFile, 1024*1024*1024);
-//	file_sink->set_level(spdlog::level::trace);
-//	spdlog::flush_every(std::chrono::seconds(1));
-//
-//	try {
-//		auto postgresql_sink = std::make_shared<spdlog::sinks::postgresql_sink>("cle");
-//		postgresql_sink->set_level(spdlog::level::trace);
-//
-//		m_pSpdLog = new spdlog::logger("3sink", { console_sink, file_sink, postgresql_sink });
-//		m_pSpdLog->set_level(spdlog::level::trace);
-//		return true;
-//	} catch(...) {
-//		std::cout << "initSpdLog postgresql_sink Error. logs can not to reach DB" << std::endl;
-////		MessageBox(_T("initSpdLog postgresql_sink Error"));
-//		return false;
-//	}
+}
+
+void CLogMakerDlg::callbackLog(std::string strLog)
+{
+	CLogMakerDlg* pDlg = (CLogMakerDlg*)AfxGetMainWnd();
+	CString str;
+	CEdit* pSendLogs = (CEdit*)pDlg->GetDlgItem(IDC_EDIT_SentLogs);
+	pSendLogs->GetWindowText(str);
+	str.Insert(0, CA2CT(strLog.c_str()) + "\r\n");
+	pSendLogs->SetWindowText(str);
 }
 
 BOOL CLogMakerDlg::OnInitDialog()
@@ -329,10 +315,6 @@ void CLogMakerDlg::closeAll()
 		GetExitCodeThread(m_pThreadSend->m_hThread, &dwResult);
 		delete m_pThreadSend;
 	}
-	//if (m_pSpdLog) {
-	//	delete m_pSpdLog;
-	//}
-
 }
 
 void CLogMakerDlg::OnBnClickedOk()
@@ -379,8 +361,7 @@ void CLogMakerDlg::OnBnClickedButtonSend5()
 void CLogMakerDlg::OnBnClickedButtonSend6()
 {
 	UpdateData();
-	sendLogMsgCnt(strLevel6, strMsg6, nCnt6);
-
+	sendLogMsgCnt(strLevel6, strMsg6, nCnt6); 
 }
 
 
@@ -441,7 +422,6 @@ void CLogMakerDlg::toSpdLog(CString strLvl, CString strMsg)
 {
 	if (strLvl == "Debug")
 		m_cLoger.debug(CT2CA(strMsg));
-//		m_pSpdLog->debug(CT2CA(strMsg));
 	else if (strLvl == "Info")
 		m_cLoger.info(CT2CA(strMsg));
 	else if (strLvl == "Warning")
@@ -452,8 +432,6 @@ void CLogMakerDlg::toSpdLog(CString strLvl, CString strMsg)
 		m_cLoger.critical(CT2CA(strMsg));
 	else // if (strLvl == "Trace")
 		m_cLoger.trace(CT2CA(strMsg));
-//	else
-//		m_pSpdLog->off(CT2CA(strMsg));
 }
 
 bool CLogMakerDlg::sendLogMsg1(CString strLvl, CString strMsg)
