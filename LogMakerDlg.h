@@ -116,6 +116,6 @@ public:
 	static void printDebugString(const char* format, ...);
 	
 	afx_msg void OnClose();
-	static void callbackLog(std::string strLog);
+	static void callbackLog(int* pMsg, int nLength);
 	CString m_strSendLogs;
 };

@@ -93,14 +93,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>./include;C:\QT2\6.4.2\msvc2019_64\include;C:\QT2\6.4.2\msvc2019_64\include\QtWidgets;C:\Program Files\master_x64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\include;C:\QT2\6.4.2\msvc2019_64\include;C:\QT2\6.4.2\msvc2019_64\include\QtWidgets;C:\Program Files\master_x64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/std:c++17 /Zc:__cplusplus  /permissive- %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>./lib;C:\Program Files\master_x64\lib;C:\QT2\6.4.2\msvc2019_64\lib;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Qt6Cored.lib;Qt6Guid.lib;Qt6Widgetsd.lib;pqxxd.lib;libpq.lib;wsock32.lib;ws2_32.lib;Winmm.lib;%(AdditionalDependencies);</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\MiniProject\LogMakerCs\x64\Debug;C:\Program Files\master_x64\lib;C:\QT2\6.4.2\msvc2019_64\lib;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SpdLogDll.lib;Qt6Cored.lib;Qt6Guid.lib;Qt6Widgetsd.lib;pqxxd.lib;libpq.lib;wsock32.lib;ws2_32.lib;Winmm.lib;%(AdditionalDependencies);</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -170,7 +170,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>./include;C:\QT2\6.4.2\msvc2019_64\include;C:\QT2\6.4.2\msvc2019_64\include\QtWidgets;C:\Program Files\master_x64\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\include;C:\QT2\6.4.2\msvc2019_64\include;C:\QT2\6.4.2\msvc2019_64\include\QtWidgets;C:\Program Files\master_x64\include;</AdditionalIncludeDirectories>
       <AdditionalOptions>/std:c++17 /Zc:__cplusplus  /permissive- %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -178,8 +178,8 @@
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>./lib;C:\Program Files\master_x64\lib;C:\QT2\6.4.2\msvc2019_64\lib;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Qt6Cored.lib;Qt6Guid.lib;Qt6Widgetsd.lib;pqxx.lib;libpq.lib;wsock32.lib;ws2_32.lib;Winmm.lib;%(AdditionalDependencies);</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\MiniProject\LogMakerCs\x64\Release;C:\Program Files\master_x64\lib;C:\QT2\6.4.2\msvc2019_64\lib;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SpdLogDll.lib;Qt6Core.lib;Qt6Gui.lib;Qt6Widgetsd.lib;pqxx.lib;libpq.lib;wsock32.lib;ws2_32.lib;Winmm.lib;%(AdditionalDependencies);</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -193,13 +193,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="CleLogger.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="include\spdlog\logger.h" />
-    <ClInclude Include="include\spdlog\sinks\callback_sink1.h" />
-    <ClInclude Include="include\spdlog\spdlog.h" />
-    <ClInclude Include="Log.h" />
-    <ClInclude Include="LogDAO.h" />
     <ClInclude Include="LogMaker.h" />
     <ClInclude Include="LogMakerDlg.h" />
     <ClInclude Include="pch.h" />
@@ -207,9 +201,6 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CleLogger.cpp" />
-    <ClCompile Include="Log.cpp" />
-    <ClCompile Include="LogDAO.cpp" />
     <ClCompile Include="LogMaker.cpp" />
     <ClCompile Include="LogMakerDlg.cpp" />
     <ClCompile Include="pch.cpp">

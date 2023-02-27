@@ -205,18 +205,18 @@ void CLogMakerDlg::initMsgs()
 bool CLogMakerDlg::initSpdLog()
 {
 	m_cLoger.setOnOffSink(true, true, false, true, true);	// Console, File, QtUi, Callback, Sql
-	m_cLoger.setLevels(spdlog::level::info, spdlog::level::warn, spdlog::level::off, spdlog::level::critical, spdlog::level::trace);
+	m_cLoger.setLevels(spdlog::level::trace, spdlog::level::trace, spdlog::level::off, spdlog::level::trace, spdlog::level::trace);
 	m_cLoger.initCleLogger("logs", NULL, callbackLog, "cle");
 	return true;
 }
 
-void CLogMakerDlg::callbackLog(std::string strLog)
+void CLogMakerDlg::callbackLog(int* pMsg, int nLength)
 {
 	CLogMakerDlg* pDlg = (CLogMakerDlg*)AfxGetMainWnd();
-	CString str;
 	CEdit* pSendLogs = (CEdit*)pDlg->GetDlgItem(IDC_EDIT_SentLogs);
-	pSendLogs->GetWindowText(str);
-	str.Insert(0, CA2CT(strLog.c_str()) + "\r\n");
+
+	CString str;	pSendLogs->GetWindowText(str);
+	str.Insert(0, CA2CT((char*)pMsg) + "\r\n");
 	pSendLogs->SetWindowText(str);
 }
 
