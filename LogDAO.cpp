@@ -67,13 +67,13 @@ void LogDAO::insertLog(Log log)
 		char* message = new char[messageLength];
 		char* query = new char[queryLength];
 
-	AnsiToUTF8(log.getMessage().c_str(), message, messageLength);
+		AnsiToUTF8(log.getMessage().c_str(), message, messageLength);
 
-	sprintf_s(query, queryLength, "INSERT INTO log(timestamp, level, message) VALUES('%s', '%s', '%s');", log.getTimestamp().c_str(), log.getLevel().c_str(), message);
+		sprintf_s(query, queryLength, "INSERT INTO log(timestamp, level, message) VALUES('%s', '%s', '%s');", log.getTimestamp().c_str(), log.getLevel().c_str(), message);
 
-	pqxx::work W(*m_pdbC);
-	W.exec(query);
-	W.commit();
+		pqxx::work W(*m_pdbC);
+		W.exec(query);
+		W.commit();
 
 		delete[] message;
 		delete[] query;
@@ -125,7 +125,7 @@ int LogDAO::UTF8ToAnsi(char* szSrc, char* strDest, int destSize)
 bool LogDAO::initLogDao(std::string strPasswd)
 {
 	std::string connectionString;
-	connectionString = "dbname = quickstartdb user = postgres password = " + strPasswd + " hostaddr = 127.0.0.1 port = 5432";
+	connectionString = "dbname =  postgres user = postgres password = " + strPasswd + " hostaddr = 127.0.0.1 port = 5432";
 	m_pdbC = new pqxx::connection(connectionString);
 
 	if (m_pdbC->is_open()) {

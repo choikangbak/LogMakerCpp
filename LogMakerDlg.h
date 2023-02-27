@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
-#include "postgresql_sink.h"
+#include "CleLogger.h"
 
 #pragma once
 
@@ -72,19 +72,21 @@ public:
 	int nCnt9;
 	int nCnt10;
 
-
 private:
 	unsigned int m_nStartTime;
-	bool sendDbMsg1(CString strLvl, CString strMsg);
-	void sendDbMsgCnt(CString strLvl, CString strMsg, UINT nCnt);
+	CWinThread* m_pThreadSend;
+	CWinThread* m_pThreadSend2;
+	//spdlog::logger* m_pSpdLog;
+
+	CleLogger m_cLoger;
+
+	bool sendLogMsg1(CString strLvl, CString strMsg);
+	void sendLogMsgCnt(CString strLvl, CString strMsg, UINT nCnt);
 
 	void initMsgs();
-	CWinThread* m_pThreadSend;
 	void closeAll();
 
 	CString makeMsgBuf(CString strMsg, UINT nPlusNo);
-
-	spdlog::logger* m_pSpdLog;
 
 	void toSpdLog(CString strLvl, CString strMsg);
 	bool initSpdLog();
@@ -100,14 +102,20 @@ public:
 	afx_msg void OnBnClickedButtonSend9();
 	afx_msg void OnBnClickedButtonSend10();
 	afx_msg void OnBnClickedCheckSendrep();
+	afx_msg void OnBnClickedCheckSendrep2();
 
 	static unsigned int WINAPI sendThread(void* arg);
+	static unsigned int WINAPI sendThread2(void* arg);
 
 	bool m_bSendRep;
 
-	void sendDbAllMsg();
+	void sendLogAllMsg1();
+	void sendLogAllMsg2();
+
 	static void printDebugString(const WCHAR* format, ...);
 	static void printDebugString(const char* format, ...);
 	
 	afx_msg void OnClose();
+	static void callbackLog(int* pMsg, int nLength);
+	CString m_strSendLogs;
 };

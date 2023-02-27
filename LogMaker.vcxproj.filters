@@ -42,7 +42,13 @@
     <ClInclude Include="LogDAO.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="postgresql_sink.h">
+    <ClInclude Include="include\spdlog\logger.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="CleLogger.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="include\spdlog\sinks\callback_sink1.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -60,6 +66,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="LogDAO.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="CleLogger.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
